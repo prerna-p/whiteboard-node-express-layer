@@ -1,0 +1,22 @@
+{
+  "name": "whiteboard-node-server",
+  "version": "1.0.0",
+  "description": "whiteboard middle layer using node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prerna-p/whiteboard-node-express-layer.git"
+  },
+  "author": "prerna",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prerna-p/whiteboard-node-express-layer/issues"
+  },
+  "homepage": "https://github.com/prerna-p/whiteboard-node-express-layer#readme",
+  "dependencies": {
+    "mongoose": "^5.3.14"
+  }
+}
