@@ -5,7 +5,7 @@ const studentSchema = mongoose.Schema({
     password: String,
     firstName: String,
     lastName: String,
-    gradYear: Date,
+    gradYear: Number,
     scholarship: Number
 }, {collection: 'students'});
 module.exports = studentSchema;

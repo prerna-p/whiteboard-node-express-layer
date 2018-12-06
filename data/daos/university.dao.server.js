@@ -5,9 +5,15 @@ const answerModel = require('../models/answer.model.server');
 // removes all the data from the database. Note that you might need to remove documents in a particular order
 
 truncateDatabase = () => {
-    answerModel.remove({});
-    questionModel.remove({});
-    studentModel.remove({});
+    /*answerModel.remove({}, function (err) {
+        console.log("Error deleting answers")
+    });*/
+    questionModel.deleteMany({}, function (err) {
+       console.log("Error deleting questions")
+    });
+    studentModel.deleteMany({}, function (err) {
+        console.log("Error deleting students")
+    });
 }
 
 populateStudent = (id,uname,pass,fn,ln,gy,sc) => {
@@ -33,29 +39,70 @@ populateQuestion = (id,ques,pts,qtype,isTrue1,choices1,correct1) => {
         isTrue: isTrue1
     }
 
-    let question = {
-        _id: id,
-        question: ques,
-        points: pts,
-        questionType: qtype,
-        multipleChoice: multipleChoice1,
-        trueFalse:trueFalse1
+    //console.log("*******************" + qtype)
+    if(qtype === 'TRUE_FALSE') {
+        return {
+            _id: id,
+            question: ques,
+            points: pts,
+            questionType: qtype,
+            multipleChoice:null,
+            trueFalse:trueFalse1
+        }
     }
 
-    return question;
+    else {
+        return {
+            _id: id,
+            question: ques,
+            points: pts,
+            questionType: qtype,
+            multipleChoice: multipleChoice1,
+        }
+    }
+
+}
+
+populateAnswers = (id,sid,qid,ans1,ans2,) => {
+    //
+
+
+    if(ans1 === true || ans1 === false) {
+        return {
+            _id: id,
+            trueFalseAnswer: ans1,
+            student: { _id: sid },
+            question:{ _id: qid }
+        }
+    }
+    else
+        return {
+            _id: id,
+            multipleChoiceAnswer: ans2,
+            student: { _id: sid },
+            question:{ _id: qid }
+        }
 }
 // populates the database with test data as described in a later section
 populateDatabase = () => {
     createStudent(populateStudent(123,'alice','alice','Alice','Wonderland',2020,15000));
     createStudent(populateStudent(234,'bob','bob','Bob','Hope',2021,12000));
-    createQuestion(populateQuestion(321,'Is the following schema valid?',10,'TRUE_FALSE','false','',''));
-    createQuestion(populateQuestion(432,'DAO stands for Dynamic Access Object.',10,'TRUE_FALSE','false','',''));
+    createQuestion(populateQuestion(321,'Is the following schema valid?',10,'TRUE_FALSE',false,'',''));
+    createQuestion(populateQuestion(432,'DAO stands for Dynamic Access Object.',10,'TRUE_FALSE',false,'',''));
     createQuestion(populateQuestion(543,'What does JPA stand for?',10,'MULTIPLE_CHOICE','',
         'Java Persistence API,Java Persisted Application,JavaScript Persistence API,JSON Persistent Associations'
-        ,'1'));
+        ,1));
     createQuestion(populateQuestion(654,'What does ORM stand for?',10,'MULTIPLE_CHOICE','',
         'Object Relational Model,Object Relative Markup,Object Reflexive Model,Object Relational Mapping'
-        ,'4'));
+        ,4));
+
+
+    console.log("******************************************")
+    console.log(populateAnswers(123, 123, 321, true, ''))
+    answerQuestion(populateAnswers(123, 123, 321, true, ''))
+    answerQuestion(populateAnswers(234, 123, 432, false, ''))
+    answerQuestion(populateAnswers(345, 123, 543, '', 1))
+    answerQuestion(populateAnswers(456, 123, 654, '', 2))
 
 }
 
@@ -71,12 +118,15 @@ createStudent = student =>
 
 //inserts a question document
 createQuestion = (question) => {
-    questionModel.create(question)
+    questionModel.create(question).then(newQues =>
+        console.log(newQues));
 };
 
 //inserts an answer by student student for question question
-answerQuestion = (studentId, questionId, answer) => {
-    answerModel.save()
+answerQuestion = (answer) => {
+    console.log(answer)
+    answerModel.create(answer).then(newAns =>
+        console.log(newAns));
 };
 
 // retrieves all students
@@ -145,8 +195,11 @@ module.exports = {
     findAllAnswers,
     findAnswerById,
     answerQuestion,
+    populateAnswers,
     findAnswersByStudent,
-    findAnswersByQuestion
+    findAnswersByQuestion,
+    truncateDatabase,
+    populateDatabase
 };
 
 

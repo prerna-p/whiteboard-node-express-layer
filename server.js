@@ -48,6 +48,13 @@ createCourse = (req, res) => {
     res.json(req.body)
 }
 
+
 app.post('/api/course', createCourse)
 app.get('/hello/:user', sayHello)*/
+
+const universityDao = require('./data/daos/university.dao.server')
+universityDao.truncateDatabase()
+universityDao.populateDatabase()
+
 app.listen(3000);
+

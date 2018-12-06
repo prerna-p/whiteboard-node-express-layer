@@ -1,0 +1,183 @@
+[1mdiff --git a/data/daos/university.dao.server.js b/data/daos/university.dao.server.js[m
+[1mindex bdf72bb..f9be19a 100644[m
+[1m--- a/data/daos/university.dao.server.js[m
+[1m+++ b/data/daos/university.dao.server.js[m
+[36m@@ -5,9 +5,15 @@[m [mconst answerModel = require('../models/answer.model.server');[m
+ // removes all the data from the database. Note that you might need to remove documents in a particular order[m
+ [m
+ truncateDatabase = () => {[m
+[31m-    answerModel.remove({});[m
+[31m-    questionModel.remove({});[m
+[31m-    studentModel.remove({});[m
+[32m+[m[32m    /*answerModel.remove({}, function (err) {[m
+[32m+[m[32m        console.log("Error deleting answers")[m
+[32m+[m[32m    });*/[m
+[32m+[m[32m    questionModel.deleteMany({}, function (err) {[m
+[32m+[m[32m       console.log("Error deleting questions")[m
+[32m+[m[32m    });[m
+[32m+[m[32m    studentModel.deleteMany({}, function (err) {[m
+[32m+[m[32m        console.log("Error deleting students")[m
+[32m+[m[32m    });[m
+ }[m
+ [m
+ populateStudent = (id,uname,pass,fn,ln,gy,sc) => {[m
+[36m@@ -33,29 +39,70 @@[m [mpopulateQuestion = (id,ques,pts,qtype,isTrue1,choices1,correct1) => {[m
+         isTrue: isTrue1[m
+     }[m
+ [m
+[31m-    let question = {[m
+[31m-        _id: id,[m
+[31m-        question: ques,[m
+[31m-        points: pts,[m
+[31m-        questionType: qtype,[m
+[31m-        multipleChoice: multipleChoice1,[m
+[31m-        trueFalse:trueFalse1[m
+[32m+[m[32m    //console.log("*******************" + qtype)[m
+[32m+[m[32m    if(qtype === 'TRUE_FALSE') {[m
+[32m+[m[32m        return {[m
+[32m+[m[32m            _id: id,[m
+[32m+[m[32m            question: ques,[m
+[32m+[m[32m            points: pts,[m
+[32m+[m[32m            questionType: qtype,[m
+[32m+[m[32m            multipleChoice:null,[m
+[32m+[m[32m            trueFalse:trueFalse1[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    else {[m
+[32m+[m[32m        return {[m
+[32m+[m[32m            _id: id,[m
+[32m+[m[32m            question: ques,[m
+[32m+[m[32m            points: pts,[m
+[32m+[m[32m            questionType: qtype,[m
+[32m+[m[32m            multipleChoice: multipleChoice1,[m
+[32m+[m[32m        }[m
+     }[m
+ [m
+[31m-    return question;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mpopulateAnswers = (id,sid,qid,ans1,ans2,) => {[m
+[32m+[m[32m    //[m
+[32m+[m
+[32m+[m
+[32m+[m[32m    if(ans1 === true || ans1 === false) {[m
+[32m+[m[32m        return {[m
+[32m+[m[32m            _id: id,[m
+[32m+[m[32m            trueFalseAnswer: ans1,[m
+[32m+[m[32m            student: { _id: sid },[m
+[32m+[m[32m            question:{ _id: qid }[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m[32m    else[m
+[32m+[m[32m        return {[m
+[32m+[m[32m            _id: id,[m
+[32m+[m[32m            multipleChoiceAnswer: ans2,[m
+[32m+[m[32m            student: { _id: sid },[m
+[32m+[m[32m            question:{ _id: qid }[m
+[32m+[m[32m        }[m
+ }[m
+ // populates the database with test data as described in a later section[m
+ populateDatabase = () => {[m
+     createStudent(populateStudent(123,'alice','alice','Alice','Wonderland',2020,15000));[m
+     createStudent(populateStudent(234,'bob','bob','Bob','Hope',2021,12000));[m
+[31m-    createQuestion(populateQuestion(321,'Is the following schema valid?',10,'TRUE_FALSE','false','',''));[m
+[31m-    createQuestion(populateQuestion(432,'DAO stands for Dynamic Access Object.',10,'TRUE_FALSE','false','',''));[m
+[32m+[m[32m    createQuestion(populateQuestion(321,'Is the following schema valid?',10,'TRUE_FALSE',false,'',''));[m
+[32m+[m[32m    createQuestion(populateQuestion(432,'DAO stands for Dynamic Access Object.',10,'TRUE_FALSE',false,'',''));[m
+     createQuestion(populateQuestion(543,'What does JPA stand for?',10,'MULTIPLE_CHOICE','',[m
+         'Java Persistence API,Java Persisted Application,JavaScript Persistence API,JSON Persistent Associations'[m
+[31m-        ,'1'));[m
+[32m+[m[32m        ,1));[m
+     createQuestion(populateQuestion(654,'What does ORM stand for?',10,'MULTIPLE_CHOICE','',[m
+         'Object Relational Model,Object Relative Markup,Object Reflexive Model,Object Relational Mapping'[m
+[31m-        ,'4'));[m
+[32m+[m[32m        ,4));[m
+[32m+[m
+[32m+[m
+[32m+[m[32m    console.log("******************************************")[m
+[32m+[m[32m    console.log(populateAnswers(123, 123, 321, true, ''))[m
+[32m+[m[32m    answerQuestion(populateAnswers(123, 123, 321, true, ''))[m
+[32m+[m[32m    answerQuestion(populateAnswers(234, 123, 432, false, ''))[m
+[32m+[m[32m    answerQuestion(populateAnswers(345, 123, 543, '', 1))[m
+[32m+[m[32m    answerQuestion(populateAnswers(456, 123, 654, '', 2))[m
+ [m
+ }[m
+ [m
+[36m@@ -71,12 +118,15 @@[m [mcreateStudent = student =>[m
+ [m
+ //inserts a question document[m
+ createQuestion = (question) => {[m
+[31m-    questionModel.create(question)[m
+[32m+[m[32m    questionModel.create(question).then(newQues =>[m
+[32m+[m[32m        console.log(newQues));[m
+ };[m
+ [m
+ //inserts an answer by student student for question question[m
+[31m-answerQuestion = (studentId, questionId, answer) => {[m
+[31m-    answerModel.save()[m
+[32m+[m[32manswerQuestion = (answer) => {[m
+[32m+[m[32m    console.log(answer)[m
+[32m+[m[32m    answerModel.create(answer).then(newAns =>[m
+[32m+[m[32m        console.log(newAns));[m
+ };[m
+ [m
+ // retrieves all students[m
+[36m@@ -145,8 +195,11 @@[m [mmodule.exports = {[m
+     findAllAnswers,[m
+     findAnswerById,[m
+     answerQuestion,[m
+[32m+[m[32m    populateAnswers,[m
+     findAnswersByStudent,[m
+[31m-    findAnswersByQuestion[m
+[32m+[m[32m    findAnswersByQuestion,[m
+[32m+[m[32m    truncateDatabase,[m
+[32m+[m[32m    populateDatabase[m
+ };[m
+ [m
+ [m
+[1mdiff --git a/data/models/question.schema.server.js b/data/models/question.schema.server.js[m
+[1mindex 1303d33..14dc91f 100644[m
+[1m--- a/data/models/question.schema.server.js[m
+[1m+++ b/data/models/question.schema.server.js[m
+[36m@@ -5,7 +5,7 @@[m [mquestionSchema = mongoose.Schema({[m
+     _id: Number,[m
+     question: String,[m
+     points: Number,[m
+[31m-    questionType: {type:String, enum:['MULTIPLE_CHOICE, TRUE_FALSE']},[m
+[32m+[m[32m    questionType: {type:String, enum:['MULTIPLE_CHOICE', 'TRUE_FALSE']},[m
+     multipleChoice: MultipleChoiceSchema,[m
+     trueFalse: TrueFalseSchema[m
+ }, {collection: 'questions'})[m
+[1mdiff --git a/data/models/student.schema.server.js b/data/models/student.schema.server.js[m
+[1mindex 5972e6a..8275227 100644[m
+[1m--- a/data/models/student.schema.server.js[m
+[1m+++ b/data/models/student.schema.server.js[m
+[36m@@ -5,7 +5,7 @@[m [mconst studentSchema = mongoose.Schema({[m
+     password: String,[m
+     firstName: String,[m
+     lastName: String,[m
+[31m-    gradYear: Date,[m
+[32m+[m[32m    gradYear: Number,[m
+     scholarship: Number[m
+ }, {collection: 'students'});[m
+ module.exports = studentSchema;[m
+\ No newline at end of file[m
+[1mdiff --git a/server.js b/server.js[m
+[1mindex 242e16e..d0c0c81 100644[m
+[1m--- a/server.js[m
+[1m+++ b/server.js[m
+[36m@@ -48,6 +48,13 @@[m [mcreateCourse = (req, res) => {[m
+     res.json(req.body)[m
+ }[m
+ [m
+[32m+[m
+ app.post('/api/course', createCourse)[m
+ app.get('/hello/:user', sayHello)*/[m
+[32m+[m
+[32m+[m[32mconst universityDao = require('./data/daos/university.dao.server')[m
+[32m+[m[32muniversityDao.truncateDatabase()[m
+[32m+[m[32muniversityDao.populateDatabase()[m
+[32m+[m
+ app.listen(3000);[m
+[41m+[m
