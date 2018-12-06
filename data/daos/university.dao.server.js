@@ -3,12 +3,16 @@ const questionModel = require('../models/question.model.server')
 const answerModel = require('../models/answer.model.server')
 
 // removes all the data from the database. Note that you might need to remove documents in a particular order
+/*
 truncateDatabase = () = {
 
 }
+*/
 
 // populates the database with test data as described in a later section
-populateDatabase()
+populateDatabase = () => {
+
+}
 
 // inserts a student document
 createStudent = student =>
@@ -77,3 +81,10 @@ findAnswersByQuestion = (questionId) => {
 
 }
 
+module.exports = {
+    createStudent,
+    findAllStudents,
+    findStudentById,
+    updateStudent,
+    deleteStudent,
+}
