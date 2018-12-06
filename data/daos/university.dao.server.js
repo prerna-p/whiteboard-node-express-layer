@@ -23,12 +23,41 @@ populateStudent = (id,uname,pass,fn,ln,gy,sc) => {
     return student;
 }
 
+populateQuestion = (id,ques,pts,qtype,isTrue1,choices1,correct1) => {
+    let multipleChoice1 = {
+        choices: choices1,
+        correct: correct1
+    }
+
+    let trueFalse1 = {
+        isTrue: isTrue1
+    }
+
+    let question = {
+        _id: id,
+        question: ques,
+        points: pts,
+        questionType: qtype,
+        multipleChoice: multipleChoice1,
+        trueFalse:trueFalse1
+    }
+
+    return question;
+}
 // populates the database with test data as described in a later section
 populateDatabase = () => {
     createStudent(populateStudent(123,'alice','alice','Alice','Wonderland',2020,15000));
-    createStudent(populateStudent(123,'alice','alice','Alice','Wonderland',2020,15000))
+    createStudent(populateStudent(234,'bob','bob','Bob','Hope',2021,12000));
+    createQuestion(populateQuestion(321,'Is the following schema valid?',10,'TRUE_FALSE','false','',''));
+    createQuestion(populateQuestion(432,'DAO stands for Dynamic Access Object.',10,'TRUE_FALSE','false','',''));
+    createQuestion(populateQuestion(543,'What does JPA stand for?',10,'MULTIPLE_CHOICE','',
+        'Java Persistence API,Java Persisted Application,JavaScript Persistence API,JSON Persistent Associations'
+        ,'1'));
+    createQuestion(populateQuestion(654,'What does ORM stand for?',10,'MULTIPLE_CHOICE','',
+        'Object Relational Model,Object Relative Markup,Object Reflexive Model,Object Relational Mapping'
+        ,'4'));
 
-};
+}
 
 
 
@@ -108,6 +137,7 @@ module.exports = {
     findStudentById,
     updateStudent,
     deleteStudent,
+    createQuestion,
     findAllQuestions,
     findQuestionById,
     updateQuestion,
