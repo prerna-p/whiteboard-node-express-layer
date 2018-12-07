@@ -226,7 +226,7 @@ findAllStudents = () => {
 
 
 findStudentById = studentId => {
-    return studentModel.findId(studentId);
+    return studentModel.findById(studentId);
 }
 
 updateStudent = (studentId, student) => {

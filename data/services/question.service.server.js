@@ -5,7 +5,9 @@ module.exports = app => {
     findAllQuestions = (req, res) => {
         universityDao.findAllQuestions().then(question => res.send(question))
     }
-
+    findAllAnswers = (req, res) => {
+        universityDao.findAllAnswers().then(ans => res.send(ans))
+    }
 
     findQuestionById = (req, res) => {
         universityDao.findQuestionById(req.params['qid']).then(question => res.send(question))
@@ -28,11 +30,13 @@ module.exports = app => {
     findAllAnswersByQuestionAndStudentId = (req,res) => {
         universityDao.findAnswersBySidQid(req.params['sid'], req.params['qid']).then(answer => res.send(answer))
     }
+
     app.get('/api/question', findAllQuestions)
     app.get('/api/question/:qid', findQuestionById)
     app.put('/api/question/:qid', updateQuestion)
     app.delete('/api/question/:qid', deleteQuestion)
     app.post('/api/student/:sid/question/:qid/answer', answerQuestion)
+    app.get('/api/answer', findAllAnswers)
     app.get('/api/student/:sid/question/:qid/answer', findAllAnswersByStudentAndQuestionId)
     app.get('/api/question/:qid/student/:sid/answer', findAllAnswersByQuestionAndStudentId)
 
