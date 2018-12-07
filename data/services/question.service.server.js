@@ -1,32 +1,33 @@
-const universityDao = require('../dao/university.dao.server')()
+const universityDao = require('../daos/university.dao.server');
 
 module.exports = app => {
 
-    findAllQuestions = (req, res) =>
-        res.json(universityDao.findAllQuestions())
-
-    findQuestionById = (req, res) =>
-        res.json(
-            universityDao.findQuestionById(req.params['qid'])
-        )
-
-    updateQuestion = (req, res) =>
-        res.json(
-            universityDao.updateQuestion(req.params['qid'], req.body)
-        )
-
-    deleteQuestion = (req, res) =>
-        res.json(
-            universityDao.deleteQuestion(req.params['qid'])
-        )
+    findAllQuestions = (req, res) => {
+        universityDao.findAllQuestions().then(question => res.send(question))
+    }
 
 
-    answerQuestion  = (req,res) =>
-        res.json(
-            universityDao.answerQuestion(req.params['sid'], req.params['qid'], req.body)
-        )
+    findQuestionById = (req, res) => {
+        universityDao.findQuestionById(req.params['qid']).then(question => res.send(question))
+    }
+    updateQuestion = (req, res) => {
+        universityDao.updateQuestion(req.params['qid'], req.body).then(response => res.send("updated question"))
+    }
+    deleteQuestion = (req, res) => {
+        universityDao.deleteQuestion(req.params['qid']).then(response => res.send("deleted question"))
+    }
 
+    answerQuestion  = (req,res) => {
+        universityDao.answerQuestion(req.params['sid'], req.params['qid'], req.body).then(answer => res.send(answer))
 
+    }
+    findAllAnswersByStudentAndQuestionId = (req,res) => {
+        universityDao.findAnswersBySidQid(req.params['sid'], req.params['qid']).then(answer => res.send(answer))
+    }
+
+    findAllAnswersByQuestionAndStudentId = (req,res) => {
+        universityDao.findAnswersBySidQid(req.params['sid'], req.params['qid']).then(answer => res.send(answer))
+    }
     app.get('/api/question', findAllQuestions)
     app.get('/api/question/:qid', findQuestionById)
     app.put('/api/question/:qid', updateQuestion)

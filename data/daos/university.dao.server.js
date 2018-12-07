@@ -2,7 +2,7 @@ const studentModel = require('../models/student.model.server');
 const questionModel = require('../models/question.model.server');
 const answerModel = require('../models/answer.model.server');
 
-truncateDatabase = () => {
+async function truncateDatabase() {
     studentModel.deleteMany({},(err) => {
         if(err){
             console.log(err);
@@ -53,7 +53,7 @@ populateQuestion = (id,ques,pts,qtype,isTrue1,choices1,correct1) => {
         isTrue: isTrue1
     }
 
-    //console.log("*******************" + qtype)
+
     if(qtype === 'TRUE_FALSE') {
         return {
             _id: id,
@@ -100,23 +100,72 @@ populateAnswers = (id,sid,qid,ans1,ans2,) => {
 
 }
 
-populateDatabase = () => {
-    createStudent(populateStudent(123,'alice','alice','Alice','Wonderland',2020,15000));
-    createStudent(populateStudent(234,'bob','bob','Bob','Hope',2021,12000));
-    createQuestion(populateQuestion(321,'Is the following schema valid?',10,'TRUE_FALSE',false,'',''));
-    createQuestion(populateQuestion(432,'DAO stands for Dynamic Access Object.',10,'TRUE_FALSE',false,'',''));
-    createQuestion(populateQuestion(543,'What does JPA stand for?',10,'MULTIPLE_CHOICE','',
-        'Java Persistence API,Java Persisted Application,JavaScript Persistence API,JSON Persistent Associations'
-         ,1));
-    createQuestion(populateQuestion(654,'What does ORM stand for?',10,'MULTIPLE_CHOICE','',
-        'Object Relational Model,Object Relative Markup,Object Reflexive Model,Object Relational Mapping'
-        ,4));
+async function populateDatabase(){
+    createStudent({
+        _id:123,
+        username:'alice',
+        password:'alice',
+        firstName:'Alice',
+        lastName:'Wonderland',
+        gradYear:2020,
+        scholarship:15000
+    })
+
+    createStudent({
+        _id:234,
+        username:'bob',
+        password:'bob',
+        firstName:'Bob',
+        lastName:'Hope',
+        gradYear:2021,
+        scholarship:12000
+    })
+
+    createQuestion({
+        _id: 321,
+        question: 'Is the following schema valid?',
+        points: 10,
+        questionType: 'TRUE_FALSE',
+        multipleChoice:null,
+        trueFalse:{isTrue: false}
+    })
+
+    createQuestion({
+        _id: 432,
+        question: 'DAO stands for Dynamic Access Object.',
+        points: 10,
+        questionType: 'TRUE_FALSE',
+        multipleChoice:null,
+        trueFalse:{isTrue: false}
+    })
+    createQuestion({
+        _id: 543,
+        question: 'What does JPA stand for?',
+        points: 10,
+        questionType: 'MULTIPLE_CHOICE',
+        multipleChoice:{
+            choices: 'Java Persistence API,Java Persisted Application,JavaScript Persistence API,JSON Persistent Associations',
+            correct: 1
+        },
+    })
+
+    createQuestion({
+        _id: 654,
+        question: 'What does ORM stand for?',
+        points: 10,
+        questionType: 'MULTIPLE_CHOICE',
+        multipleChoice:{
+            choices: 'Object Relational Model,Object Relative Markup,Object Reflexive Model,Object Relational Mapping',
+            correct: 4
+        },
+    })
 
     answerQuestion(123,321,{
         _id: 123,
         trueFalseAnswer: true
     });
-        answerQuestion(123,432,{
+
+    answerQuestion(123,432,{
         _id: 234,
         trueFalseAnswer: false
     });
@@ -153,66 +202,82 @@ populateDatabase = () => {
 
 }
 
-createStudent = student =>
-    studentModel.create(student).then(newUser =>
+createStudent = student => {
+    return studentModel.create(student).then(newUser =>
         console.log(newUser));
+};
 
 
 createQuestion = (question) => {
-    questionModel.create(question).then(newQues =>
+    return questionModel.create(question).then(newQues =>
         console.log(newQues));
 };
 
 answerQuestion = (sid, qid, answer) => {
     answer.student = sid;
     answer.question = qid;
-    answerModel.create(answer).then(newAns =>
+    return answerModel.create(answer).then(newAns =>
         console.log(newAns));
 };
 
-findAllStudents = () =>
-    studentModel.find();
+findAllStudents = () => {
+    return studentModel.find();
+}
 
-findStudentById = studentId =>
-    studentModel.findId(studentId);
 
-updateStudent = (studentId, student) =>
-    studentModel.update({_id: studentId}, {$set: student});
+findStudentById = studentId => {
+    return studentModel.findId(studentId);
+}
 
-deleteStudent = studentId =>
-    studentModel.remove({_id: studentId});
+updateStudent = (studentId, student) => {
+    return studentModel.update({_id: studentId}, {$set: student});
+}
+
+
+deleteStudent = studentId => {
+    return studentModel.remove({_id: studentId});
+}
+
 
 findAllQuestions = () => {
-    questionModel.find()
+    return questionModel.find()
 };
 
 findQuestionById = (id) => {
-    questionModel.findById(id)
+    return questionModel.findById(id)
 };
 
-updateQuestion = (qid, question) =>
-    questionModel.update({_id: qid}, {$set: question});
+updateQuestion = (qid, question) => {
+    return questionModel.update({_id: qid}, {$set: question});
+}
+
 
 deleteQuestion = qid => {
-    questionModel.remove({_id: qid})
+    return questionModel.remove({_id: qid})
 };
 
 findAllAnswers = () => {
-    answerModel.find()
+    return answerModel.find()
 };
 
 findAnswerById = (id) => {
-    answerModel.findById(id)
+    return answerModel.findById(id)
 };
 
 findAnswersByStudent = (studentId) => {
-
-
+    return answerModel.find({student:studentId})
 };
 
 findAnswersByQuestion = (questionId) => {
-
+    return answerModel.find({question:questionId})
 };
+
+findAnswersBySidQid = (sid, qid) => {
+    return answerModel.find({student:sid,question:qid})
+};
+
+
+
 
 module.exports = {
     createStudent,
@@ -232,5 +297,6 @@ module.exports = {
     findAnswersByStudent,
     findAnswersByQuestion,
     truncateDatabase,
-    populateDatabase
+    populateDatabase,
+    findAnswersBySidQid
 };

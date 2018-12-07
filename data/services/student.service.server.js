@@ -1,26 +1,24 @@
-const universityDao = require('../dao/university.dao.server')()
+const universityDao = require('../daos/university.dao.server');
 
 module.exports = app => {
-    createStudent = (req, res) =>
-        res.json(universityDao.createStudent(req.body))
+    createStudent = (req, res) => {
+        universityDao.createStudent(req.body).then(student => res.send(student))
+    }
 
-    findAllStudents = (req, res) =>
-        res.json(universityDao.findAllStudents())
+    findAllStudents = (req, res) => {
+        universityDao.findAllStudents().then(student => res.send(student))
+    }
 
-    findStudentById = (req, res) =>
-        res.json(
-            universityDao.findStudentById(req.params['studentId'])
-        )
+    findStudentById = (req, res) => {
+        universityDao.findStudentById(req.params['studentId']).then(student => res.send(student))
 
-    deleteStudent = (req, res) =>
-        res.json(
-            universityDao.deleteStudent(req.params.studentId)
-        )
-
-    updateStudent = (req, res) =>
-        res.json(
-            universityDao.updateStudent(req.params.studentId, req.body)
-        )
+    }
+    deleteStudent = (req, res) => {
+        universityDao.deleteStudent(req.params['studentId']).then(response => res.send("deleted student"))
+    }
+    updateStudent = (req, res) => {
+        universityDao.updateStudent(req.params['studentId'], req.body).then(response => res.send("updated student"))
+    }
 
     app.post('/api/student', createStudent)
     app.get('/api/student', findAllStudents)
