@@ -2,19 +2,33 @@ const studentModel = require('../models/student.model.server');
 const questionModel = require('../models/question.model.server');
 const answerModel = require('../models/answer.model.server');
 
-// removes all the data from the database. Note that you might need to remove documents in a particular order
-
 truncateDatabase = () => {
-    /*answerModel.remove({}, function (err) {
-        console.log("Error deleting answers")
-    });*/
-    questionModel.deleteMany({}, function (err) {
-       console.log("Error deleting questions")
+    studentModel.deleteMany({},(err) => {
+        if(err){
+            console.log(err);
+        }else{
+            console.log('deleted students');
+        }
     });
-    studentModel.deleteMany({}, function (err) {
-        console.log("Error deleting students")
+
+    questionModel.deleteMany({},(err) => {
+        if(err){
+            console.log(err);
+        }else{
+            console.log('deleted questions');
+        }
     });
-}
+
+    answerModel.deleteMany({},(err) => {
+        if(err){
+            console.log(err);
+        }else{
+            console.log('deleted answers');
+        }
+    });
+};
+
+
 
 populateStudent = (id,uname,pass,fn,ln,gy,sc) => {
     let student = {
@@ -64,9 +78,8 @@ populateQuestion = (id,ques,pts,qtype,isTrue1,choices1,correct1) => {
 }
 
 populateAnswers = (id,sid,qid,ans1,ans2,) => {
-    //
 
-
+    console.log(id + " " + sid + " " + qid + " " + ans1 + " " + ans2 )
     if(ans1 === true || ans1 === false) {
         return {
             _id: id,
@@ -75,15 +88,18 @@ populateAnswers = (id,sid,qid,ans1,ans2,) => {
             question:{ _id: qid }
         }
     }
-    else
+    else {
         return {
             _id: id,
+            trueFalseAnswer: ans1,
             multipleChoiceAnswer: ans2,
             student: { _id: sid },
             question:{ _id: qid }
         }
+    }
+
 }
-// populates the database with test data as described in a later section
+
 populateDatabase = () => {
     createStudent(populateStudent(123,'alice','alice','Alice','Wonderland',2020,15000));
     createStudent(populateStudent(234,'bob','bob','Bob','Hope',2021,12000));
@@ -91,49 +107,72 @@ populateDatabase = () => {
     createQuestion(populateQuestion(432,'DAO stands for Dynamic Access Object.',10,'TRUE_FALSE',false,'',''));
     createQuestion(populateQuestion(543,'What does JPA stand for?',10,'MULTIPLE_CHOICE','',
         'Java Persistence API,Java Persisted Application,JavaScript Persistence API,JSON Persistent Associations'
-        ,1));
+         ,1));
     createQuestion(populateQuestion(654,'What does ORM stand for?',10,'MULTIPLE_CHOICE','',
         'Object Relational Model,Object Relative Markup,Object Reflexive Model,Object Relational Mapping'
         ,4));
 
+    answerQuestion(123,321,{
+        _id: 123,
+        trueFalseAnswer: true
+    });
+        answerQuestion(123,432,{
+        _id: 234,
+        trueFalseAnswer: false
+    });
 
-    console.log("******************************************")
-    console.log(populateAnswers(123, 123, 321, true, ''))
-    answerQuestion(populateAnswers(123, 123, 321, true, ''))
-    answerQuestion(populateAnswers(234, 123, 432, false, ''))
-    answerQuestion(populateAnswers(345, 123, 543, '', 1))
-    answerQuestion(populateAnswers(456, 123, 654, '', 2))
+    answerQuestion(123,543,{
+        _id: 345,
+        multipleChoiceAnswer: 1
+    });
+
+    answerQuestion(123,654,{
+        _id: 456,
+        multipleChoiceAnswer: 2
+    });
+
+    answerQuestion(234,321,{
+        _id: 567,
+        trueFalseAnswer: false
+    });
+
+    answerQuestion(234,432,{
+        _id: 678,
+        trueFalseAnswer: true
+    });
+
+    answerQuestion(234,543,{
+        _id: 789,
+        multipleChoiceAnswer: 3
+    });
+
+    answerQuestion(234,654,{
+        _id: 890,
+        multipleChoiceAnswer:4
+    });
 
 }
 
-
-
-
-
-// inserts a student document
 createStudent = student =>
     studentModel.create(student).then(newUser =>
         console.log(newUser));
 
 
-//inserts a question document
 createQuestion = (question) => {
     questionModel.create(question).then(newQues =>
         console.log(newQues));
 };
 
-//inserts an answer by student student for question question
-answerQuestion = (answer) => {
-    console.log(answer)
+answerQuestion = (sid, qid, answer) => {
+    answer.student = sid;
+    answer.question = qid;
     answerModel.create(answer).then(newAns =>
         console.log(newAns));
 };
 
-// retrieves all students
 findAllStudents = () =>
     studentModel.find();
 
-// retrieves a single student document whose ID is id
 findStudentById = studentId =>
     studentModel.findId(studentId);
 
@@ -143,12 +182,10 @@ updateStudent = (studentId, student) =>
 deleteStudent = studentId =>
     studentModel.remove({_id: studentId});
 
-// retrieves all questions
 findAllQuestions = () => {
     questionModel.find()
 };
 
-// retrieves a single question document whose ID is id
 findQuestionById = (id) => {
     questionModel.findById(id)
 };
@@ -160,23 +197,19 @@ deleteQuestion = qid => {
     questionModel.remove({_id: qid})
 };
 
-// retrieves all the answers
 findAllAnswers = () => {
     answerModel.find()
 };
 
-// retrieves a single answer document whose ID is id
 findAnswerById = (id) => {
     answerModel.findById(id)
 };
 
-// retrieves all the answers for a student whose ID is studentId
 findAnswersByStudent = (studentId) => {
 
 
 };
 
-// retrieves all the answers for a question whose ID is questionId
 findAnswersByQuestion = (questionId) => {
 
 };
@@ -201,16 +234,3 @@ module.exports = {
     truncateDatabase,
     populateDatabase
 };
-
-
-
-/*studentModel.create({
-    _id: student.id,
-    username: student.username,
-    password: student.password,
-    firstName: student.firstName,
-    lastName: student.lastName,
-    gradYear: student.gradYear,
-    scholarship: student.scholarship
-
-})*/
