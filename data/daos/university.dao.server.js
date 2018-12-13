@@ -3,29 +3,43 @@ const questionModel = require('../models/question.model.server');
 const answerModel = require('../models/answer.model.server');
 
 async function truncateDatabase() {
-    studentModel.deleteMany({},(err) => {
-        if(err){
-            console.log(err);
-        }else{
-            console.log('deleted students');
-        }
-    });
 
-    questionModel.deleteMany({},(err) => {
-        if(err){
-            console.log(err);
-        }else{
-            console.log('deleted questions');
-        }
-    });
+    try{
+        studentModel.deleteMany({},(err) => {
+            if(err){
+                console.log(err);
+            }else{
+                console.log('deleted students');
+            }
+        });
+    }catch (e) {
+        throw e.message
+    }
 
-    answerModel.deleteMany({},(err) => {
-        if(err){
-            console.log(err);
-        }else{
-            console.log('deleted answers');
-        }
-    });
+    try{
+        questionModel.deleteMany({},(err) => {
+            if(err){
+                console.log(err);
+            }else{
+                console.log('deleted questions');
+            }
+        });
+    }catch (e) {
+        throw e.message
+    }
+
+    try{
+        answerModel.deleteMany({},(err) => {
+            if(err){
+                console.log(err);
+            }else{
+                console.log('deleted answers');
+            }
+        });
+    }catch (e) {
+        throw e.message
+    }
+
 };
 
 
